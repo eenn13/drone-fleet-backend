@@ -87,8 +87,7 @@ export class MissionsService {
 
     // Check if drone is available
     if (
-      drone.status !== DroneStatus.AVAILABLE &&
-      drone.status !== DroneStatus.IN_MISSION
+      drone.status !== DroneStatus.AVAILABLE
     ) {
       throw new BadRequestException('Drone is not available for mission');
     }
