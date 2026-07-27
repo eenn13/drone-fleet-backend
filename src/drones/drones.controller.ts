@@ -38,6 +38,15 @@ export class DronesController {
     return drone;
   }
 
+  @Get(':id/can-delete')
+  async canDelete(@Param('id') id: string) {
+    const canDelete = await this.dronesService.canDelete(id);
+    return {
+      canDelete,
+      activeMissionCount: canDelete ? 0 : await this.dronesService.getActiveMissionCount(id),
+    };
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createDroneDto: CreateDroneDto) {
