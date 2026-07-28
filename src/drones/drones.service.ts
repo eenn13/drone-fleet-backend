@@ -7,14 +7,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, FindOptionsWhere } from 'typeorm';
 import { Drone, DroneStatus } from '../entities/drone.entity';
 import { CreateDroneDto, UpdateDroneDto } from '../dto/create-drone.dto';
-import { MissionStatus } from '../entities/mission.entity';
+import { Mission, MissionStatus } from '../entities/mission.entity';
 
 @Injectable()
 export class DronesService {
-  missionRepository: any;
   constructor(
     @InjectRepository(Drone)
     private droneRepository: Repository<Drone>,
+    @InjectRepository(Mission) // ✅ Mission repository'sini ekle
+    private missionRepository: Repository<Mission>,
   ) {}
 
   async findAll({
