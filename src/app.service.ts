@@ -12,7 +12,7 @@ export class AppService {
     @InjectRepository(Mission)
     private missionRepository: Repository<Mission>,
   ) {}
-  
+
   getHello(): string {
     return 'Hello World!';
   }
@@ -23,7 +23,7 @@ export class AppService {
 
     // 1. Toplam drone sayısı ve duruma göre dağılım
     const totalDrones = await this.droneRepository.count();
-    
+
     const statusBreakdown = await this.droneRepository
       .createQueryBuilder('drone')
       .select('drone.status', 'status')
@@ -34,7 +34,9 @@ export class AppService {
     // 2. Bakımı gecikmiş dronelar
     const overdueMaintenance = await this.droneRepository
       .createQueryBuilder('drone')
-      .where('drone.nextMaintenanceDueDate < :today', { today: now.toISOString().split('T')[0] })
+      .where('drone.nextMaintenanceDueDate < :today', {
+        today: now.toISOString().split('T')[0],
+      })
       .andWhere('drone.status != :retired', { retired: DroneStatus.RETIRED })
       .orderBy('drone.nextMaintenanceDueDate', 'ASC')
       .getMany();
@@ -46,8 +48,12 @@ export class AppService {
         now: now.toISOString(),
         next24Hours: next24Hours.toISOString(),
       })
-      .andWhere('mission.status != :completed', { completed: MissionStatus.COMPLETED })
-      .andWhere('mission.status != :aborted', { aborted: MissionStatus.ABORTED })
+      .andWhere('mission.status != :completed', {
+        completed: MissionStatus.COMPLETED,
+      })
+      .andWhere('mission.status != :aborted', {
+        aborted: MissionStatus.ABORTED,
+      })
       .orderBy('mission.plannedStart', 'ASC')
       .getMany();
 
@@ -57,35 +63,45 @@ export class AppService {
       .select('AVG(drone.totalFlightHours)', 'average')
       .getRawOne();
 
-    const averageFlightHours = parseFloat(averageFlightHoursResult?.average || '0');
+    const averageFlightHours = parseFloat(
+      averageFlightHoursResult?.average || '0',
+    );
 
     // 5. Bakım durumu özeti (ekstra bilgi)
     const maintenanceStats = await this.droneRepository
       .createQueryBuilder('drone')
       .select(
         `CASE 
-          WHEN drone.nextMaintenanceDueDate < CURRENT_DATE THEN 'overdue'
-          WHEN drone.nextMaintenanceDueDate <= CURRENT_DATE + INTERVAL '7 days' THEN 'due_soon'
-          ELSE 'good'
-        END`,
-        'status'
+      WHEN drone.nextMaintenanceDueDate < CURRENT_DATE THEN 'overdue'
+      WHEN drone.nextMaintenanceDueDate <= CURRENT_DATE + INTERVAL '7 days' THEN 'due_soon'
+      ELSE 'good'
+    END`,
+        'status',
       )
       .addSelect('COUNT(drone.id)', 'count')
       .where('drone.status != :retired', { retired: DroneStatus.RETIRED })
-      .groupBy('status')
+      .groupBy(
+        `
+    CASE 
+      WHEN drone.nextMaintenanceDueDate < CURRENT_DATE THEN 'overdue'
+      WHEN drone.nextMaintenanceDueDate <= CURRENT_DATE + INTERVAL '7 days' THEN 'due_soon'
+      ELSE 'good'
+    END
+  `,
+      )
       .getRawMany();
 
     return {
       summary: {
         totalDrones,
-        statusBreakdown: statusBreakdown.map(item => ({
+        statusBreakdown: statusBreakdown.map((item) => ({
           status: item.status,
           count: parseInt(item.count, 10),
         })),
         averageFlightHours: parseFloat(averageFlightHours.toFixed(2)),
       },
       maintenance: {
-        overdue: overdueMaintenance.map(drone => ({
+        overdue: overdueMaintenance.map((drone) => ({
           id: drone.id,
           serialNumber: drone.serialNumber,
           model: drone.model,
@@ -94,18 +110,19 @@ export class AppService {
           lastMaintenanceDate: drone.lastMaintenanceDate,
           nextMaintenanceDueDate: drone.nextMaintenanceDueDate,
           daysOverdue: Math.ceil(
-            (new Date().getTime() - new Date(drone.nextMaintenanceDueDate).getTime()) /
-            (1000 * 60 * 60 * 24)
+            (new Date().getTime() -
+              new Date(drone.nextMaintenanceDueDate).getTime()) /
+              (1000 * 60 * 60 * 24),
           ),
         })),
         overdueCount: overdueMaintenance.length,
-        maintenanceStats: maintenanceStats.map(item => ({
+        maintenanceStats: maintenanceStats.map((item) => ({
           status: item.status,
           count: parseInt(item.count, 10),
         })),
       },
       missions: {
-        next24Hours: missionsNext24Hours.map(mission => ({
+        next24Hours: missionsNext24Hours.map((mission) => ({
           id: mission.id,
           name: mission.name,
           type: mission.type,
