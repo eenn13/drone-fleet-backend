@@ -35,8 +35,8 @@ async function bootstrap() {
   if (process.env.NODE_ENV !== 'production') {
     const seedService = app.get(SeedService);
     try {
-      // console.log('🌱 Running seed...');
-      // await seedService.seed();
+      console.log('🌱 Running seed...');
+      await seedService.seed();
     } catch (error) {
       console.error('❌ Seed failed:', error);
     }

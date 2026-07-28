@@ -8,6 +8,8 @@ import { Drone } from './entities/drone.entity';
 import { Mission } from './entities/mission.entity';
 import { MaintenanceLog } from './entities/maintenance-log.entity';
 import { SeedModule } from './seed/seed.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -29,10 +31,13 @@ import { SeedModule } from './seed/seed.module';
       }),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([Drone, Mission]),
     DronesModule,
     MissionsModule,
     MaintenanceModule,
     SeedModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
