@@ -26,8 +26,10 @@ import { AppService } from './app.service';
         password: configService.get('DB_PASSWORD', 'root'),
         database: configService.get('DB_DATABASE', 'postgres'),
         entities: [Drone, Mission, MaintenanceLog],
-        synchronize: configService.get('NODE_ENV') !== 'production',
-        logging: configService.get('NODE_ENV') !== 'production',
+        synchronize: false,
+        migrations: ['dist/migrations/*.js'],
+        migrationsRun: true, // Uygulama başlarken migration'ları çalıştır
+        logging: true,
       }),
       inject: [ConfigService],
     }),
