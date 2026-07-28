@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MaintenanceLog } from '../entities/maintenance-log.entity';
@@ -75,6 +75,16 @@ export class MaintenanceService {
       throw new NotFoundException(
         `Drone with ID ${createMaintenanceLogDto.droneId} not found`,
       );
+    }
+
+    // Drone zaten MAINTENANCE durumunda mı?
+    if (drone.status === DroneStatus.MAINTENANCE) {
+      throw new BadRequestException(`Drone ${drone.serialNumber} is already in MAINTENANCE status`);
+    }
+
+    // Drone RETIRED mi?
+    if (drone.status === DroneStatus.RETIRED) {
+      throw new BadRequestException(`Drone ${drone.serialNumber} is RETIRED and cannot be maintained`);
     }
 
     if (!createMaintenanceLogDto.datePerformed) {
