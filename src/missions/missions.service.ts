@@ -86,45 +86,64 @@ export class MissionsService {
   }
 
   async findAll({
-    page = 1,
-    limit = 20,
-    droneId,
-    status,
-  }: {
-    page: number;
-    limit: number;
-    droneId?: string;
-    status?: string;
-  }) {
-    const query = this.missionRepository
-      .createQueryBuilder('mission')
-      .leftJoinAndSelect('mission.assignedDrone', 'drone')
-      .orderBy('mission.plannedStart', 'DESC');
+  page = 1,
+  limit = 20,
+  status,
+  droneId,
+  startDate,
+  endDate,
+}: {
+  page: number;
+  limit: number;
+  status?: string;
+  droneId?: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  const query = this.missionRepository
+    .createQueryBuilder('mission')
+    .leftJoinAndSelect('mission.assignedDrone', 'drone')
+    .orderBy('mission.plannedStart', 'DESC');
 
-    if (droneId) {
-      query.andWhere('mission.droneId = :droneId', { droneId });
-    }
-
-    if (
-      status &&
-      Object.values(MissionStatus).includes(status as MissionStatus)
-    ) {
-      query.andWhere('mission.status = :status', { status });
-    }
-
-    const [items, total] = await query
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    return {
-      items,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    };
+  // ✅ Status filtresi
+  if (status && Object.values(MissionStatus).includes(status as MissionStatus)) {
+    query.andWhere('mission.status = :status', { status });
   }
+
+  // ✅ Drone ID filtresi
+  if (droneId) {
+    query.andWhere('mission.droneId = :droneId', { droneId });
+  }
+
+  // ✅ Tarih aralığı filtresi (startDate - endDate)
+  if (startDate && endDate) {
+    query.andWhere('mission.plannedStart BETWEEN :startDate AND :endDate', {
+      startDate: new Date(startDate).toISOString(),
+      endDate: new Date(endDate).toISOString(),
+    });
+  } else if (startDate) {
+    query.andWhere('mission.plannedStart >= :startDate', {
+      startDate: new Date(startDate).toISOString(),
+    });
+  } else if (endDate) {
+    query.andWhere('mission.plannedStart <= :endDate', {
+      endDate: new Date(endDate).toISOString(),
+    });
+  }
+
+  const [items, total] = await query
+    .skip((page - 1) * limit)
+    .take(limit)
+    .getManyAndCount();
+
+  return {
+    items,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
+}
 
   async findOne(id: string): Promise<Mission> {
     const mission = await this.missionRepository.findOne({

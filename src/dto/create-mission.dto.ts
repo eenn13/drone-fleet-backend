@@ -1,11 +1,14 @@
-import { 
-  IsString, 
-  IsEnum, 
-  IsDateString, 
-  IsOptional, 
-  IsNumber, 
+import {
+  IsString,
+  IsEnum,
+  IsDateString,
+  IsOptional,
+  IsNumber,
   Min,
-  IsNotEmpty 
+  IsNotEmpty,
+  IsUUID,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 import { MissionType, MissionStatus } from '../entities/mission.entity';
 import { PartialType } from '@nestjs/mapped-types';
@@ -13,6 +16,8 @@ import { PartialType } from '@nestjs/mapped-types';
 export class CreateMissionDto {
   @IsString()
   @IsNotEmpty({ message: 'Mission name is required' })
+  @MinLength(3, { message: 'Mission name must be at least 3 characters' })
+  @MaxLength(100, { message: 'Mission name cannot exceed 100 characters' })
   name?: string;
 
   @IsEnum(MissionType)
@@ -56,7 +61,7 @@ export class CreateMissionDto {
   @IsString()
   abortReason?: string;
 
-  @IsString()
+  @IsUUID()
   @IsNotEmpty({ message: 'Drone ID is required' })
   droneId?: string;
 }

@@ -22,10 +22,19 @@ export class MissionsController {
   async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
-    @Query('droneId') droneId?: string,
     @Query('status') status?: string,
+    @Query('droneId') droneId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ) {
-    return this.missionsService.findAll({ page, limit, droneId, status });
+    return this.missionsService.findAll({
+      page,
+      limit,
+      status,
+      droneId,
+      startDate,
+      endDate,
+    });
   }
 
   @Get(':id')
