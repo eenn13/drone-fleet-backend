@@ -77,7 +77,6 @@ export class MaintenanceService {
       );
     }
 
-    // Drone zaten MAINTENANCE durumunda mı?
     if (drone.status === DroneStatus.MAINTENANCE) {
       throw new BadRequestException(`Drone ${drone.serialNumber} is already in MAINTENANCE status`);
     }
@@ -87,18 +86,36 @@ export class MaintenanceService {
       throw new BadRequestException(`Drone ${drone.serialNumber} is RETIRED and cannot be maintained`);
     }
 
+    // Drone IN_MISSION mi?
+    if (drone.status === DroneStatus.IN_MISSION) {
+      throw new BadRequestException(
+        `Drone ${drone.serialNumber} is IN_MISSION and cannot be maintained. Complete or abort the mission first.`
+      );
+    }
+    
     if (!createMaintenanceLogDto.datePerformed) {
-      throw new NotFoundException(`Date performed is required`);
+      throw new BadRequestException('Date performed is required');
     }
 
-    // Update drone maintenance dates
-    const now = new Date();
-    drone.lastMaintenanceDate = createMaintenanceLogDto.datePerformed;
-    drone.nextMaintenanceDueDate = new Date(now.setDate(now.getDate() + 30))
-      .toISOString()
-      .split('T')[0];
+    drone.status = DroneStatus.MAINTENANCE;
+    // Drone'un bakım tarihlerini güncelle
+    const datePerformed = new Date(createMaintenanceLogDto.datePerformed);
+    
+    // lastMaintenanceDate = datePerformed
+    drone.lastMaintenanceDate = datePerformed.toISOString().split('T')[0];
+    
+    // nextMaintenanceDueDate = datePerformed + 90 gün
+    const nextMaintenanceDate = new Date(datePerformed);
+    nextMaintenanceDate.setDate(nextMaintenanceDate.getDate() + 90);
+    drone.nextMaintenanceDueDate = nextMaintenanceDate.toISOString().split('T')[0];
+    
+    // totalFlightHours = flightHoursAtTime
+    drone.totalFlightHours = drone.totalFlightHours + (createMaintenanceLogDto.flightHoursAtTime === undefined ? 0 : createMaintenanceLogDto.flightHoursAtTime);
+
+    // Drone'u kaydet
     await this.droneRepository.save(drone);
 
+    // Bakım log'u oluştur
     const log = this.maintenanceRepository.create(createMaintenanceLogDto);
     return this.maintenanceRepository.save(log);
   }
@@ -116,8 +133,41 @@ export class MaintenanceService {
     return this.maintenanceRepository.save(log);
   }
 
+   /**
+   * Bakım kaydını siler ve drone'un durumunu günceller
+   */
   async remove(id: string): Promise<boolean> {
+    // 1. Silinecek bakım kaydını bul
+    const log = await this.findOne(id);
+    if (!log) {
+      throw new NotFoundException(`Maintenance log with ID ${id} not found`);
+    }
+
+    const droneId = log.droneId;
+
+    // 2. Bakım kaydını sil
     const result = await this.maintenanceRepository.delete(id);
-    return (result?.affected || 0) > 0;
+    const isDeleted = (result?.affected || 0) > 0;
+
+    if (!isDeleted) {
+      return false;
+    }
+
+    // 3. Drone'un kalan bakım kayıtlarını kontrol et
+    const remainingLogs = await this.maintenanceRepository.find({
+      where: { droneId },
+    });
+
+    // 4. Eğer drone MAINTENANCE durumunda ve başka bakım kaydı yoksa AVAILABLE yap
+    const drone = await this.droneRepository.findOne({
+      where: { id: droneId },
+    });
+
+    if (drone && drone.status === DroneStatus.MAINTENANCE && remainingLogs.length === 0) {
+      drone.status = DroneStatus.AVAILABLE;
+      await this.droneRepository.save(drone);
+    }
+
+    return true;
   }
 }
