@@ -1,98 +1,277 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+Drone Fleet Management - Backend
+NestJS, TypeORM ve PostgreSQL ile geliştirilmiş Drone Filo Yönetim API'si.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+📋 Özellikler
+Drone Yönetimi: CRUD işlemleri, durum yönetimi
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Görev Yönetimi: CRUD işlemleri, status akışı, çakışma kontrolü
 
-## Description
+Bakım Yönetimi: CRUD işlemleri, otomatik bakım tarihi hesaplama
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Filo Sağlık Dashboard: Drone istatistikleri, bakım uyarıları
 
-## Project setup
+Mission Status Flow: PLANNED → PRE_FLIGHT_CHECK → IN_PROGRESS → COMPLETED/ABORTED
 
-```bash
-$ npm install
-```
+Otomatik Bakım Hesaplama: Her 50 uçuş saatinde veya 90 günde bir
 
-## Compile and run the project
+Çakışma Kontrolü: Aynı drone'a çakışan görev atanamaz
 
-```bash
-# development
-$ npm run start
+Veritabanı Migration: Production-ready migration desteği
 
-# watch mode
-$ npm run start:dev
+Seed: Gerçekçi test verileri (1000 drone, 250 mission, 500 bakım kaydı)
 
-# production mode
-$ npm run start:prod
-```
+Validation: DTO seviyesinde validasyon
 
-## Run tests
+CORS: Frontend entegrasyonu için CORS desteği
 
-```bash
-# unit tests
-$ npm run test
+🚀 Başlangıç
+Gereksinimler
+Node.js (v18 veya üzeri)
 
-# e2e tests
-$ npm run test:e2e
+PostgreSQL (v14 veya üzeri)
 
-# test coverage
-$ npm run test:cov
-```
+npm veya yarn
 
-## Deployment
+Kurulum
+bash
+# 1. Projeyi klonlayın
+git clone <repository-url>
+cd drone-fleet-backend
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+# 2. Bağımlılıkları yükleyin
+npm install
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+# 3. Çevresel değişkenleri ayarlayın
+cp .env.example .env
+# .env dosyasını düzenleyin
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+# 4. Veritabanını oluşturun (PostgreSQL'de)
+psql -U postgres -c "CREATE DATABASE drone_fleet;"
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+# 5. Migration'ları çalıştırın
+npm run build
+npm run migration:run
 
-## Resources
+.env Dosyası
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+DB_DATABASE=drone_fleet
 
-Check out a few resources that may come in handy when working with NestJS:
+# Server
+PORT=3000
+NODE_ENV=development
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# JWT (opsiyonel)
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=7d
 
-## Support
+Geliştirme Sunucusu
+bash
+# Geliştirme modu (watch ile)
+npm run start:dev
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Debug modu
+npm run start:debug
 
-## Stay in touch
+# Production modu
+npm run start:prod
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+backend/
+├── src/
+│   ├── drones/              # Drone modülü
+│   │   ├── drones.controller.ts
+│   │   ├── drones.service.ts
+│   │   └── drones.module.ts
+│   ├── missions/            # Mission modülü
+│   │   ├── missions.controller.ts
+│   │   ├── missions.service.ts
+│   │   └── missions.module.ts
+│   ├── maintenance/         # Maintenance modülü
+│   │   ├── maintenance.controller.ts
+│   │   ├── maintenance.service.ts
+│   │   └── maintenance.module.ts
+│   ├── seed/                # Seed modülü
+│   │   ├── seed.controller.ts
+│   │   ├── seed.service.ts
+│   │   └── seed.module.ts
+│   ├── entities/            # TypeORM entity'leri
+│   │   ├── drone.entity.ts
+│   │   ├── mission.entity.ts
+│   │   └── maintenance-log.entity.ts
+│   ├── dto/                 # Data Transfer Object'ler
+│   │   ├── create-drone.dto.ts
+│   │   ├── create-mission.dto.ts
+│   │   └── create-maintenance-log.dto.ts
+│   ├── migrations/          # Database migration dosyaları
+│   │   └── *.ts
+│   ├── app.module.ts        # Ana modül
+│   ├── app.controller.ts    # Ana controller
+│   ├── app.service.ts       # Ana servis
+│   └── main.ts              # Uygulama giriş noktası
+├── typeorm.config.ts        # TypeORM konfigürasyonu
+├── .env.example             # Örnek çevresel değişkenler
+├── package.json             # Proje bağımlılıkları
+├── tsconfig.json            # TypeScript konfigürasyonu
+└── nest-cli.json            # NestJS CLI konfigürasyonu
 
-## License
+🛠 Kullanılan Teknolojiler
+NestJS	10.x	Backend framework
+TypeORM	0.3.x	ORM
+PostgreSQL	14+	Veritabanı
+TypeScript	5.x	Tip güvenliği
+Class-Validator	0.14.x	Validasyon
+Class-Transformer	0.5.x	DTO dönüşümü
+Dotenv	16.x	Çevresel değişkenler
+UUID	9.x	UUID oluşturma
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+🔧 Script'ler
+Script	Açıklama
+npm run start	Production modunda başlat
+npm run start:dev	Geliştirme modunda başlat (watch ile)
+npm run start:debug	Debug modunda başlat
+npm run build	Production build oluştur
+npm run migration:run	Migration'ları çalıştır
+npm run migration:revert	Son migration'ı geri al
+npm run migration:create	Yeni migration oluştur
+npm run migration:generate	Otomatik migration oluştur
+npm run seed	Seed verilerini yükle
+npm run clear-data	Tüm verileri temizle
+
+🎯 API Endpoint'leri
+Drone Endpoint'leri
+Method	Endpoint	Açıklama
+GET	/api/drones	Tüm droneları listele (pagination, filtreleme)
+GET	/api/drones/:id	Drone detayı
+POST	/api/drones	Yeni drone oluştur
+PUT	/api/drones/:id	Drone güncelle
+DELETE	/api/drones/:id	Drone sil
+GET	/api/drones/:id/can-delete	Drone silinebilir mi kontrol et
+POST	/api/drones/:id/maintenance	Bakım durumunu güncelle
+Mission Endpoint'leri
+Method	Endpoint	Açıklama
+GET	/api/missions	Tüm görevleri listele (pagination, filtreleme)
+GET	/api/missions/:id	Görev detayı
+POST	/api/missions	Yeni görev oluştur
+PUT	/api/missions/:id	Görev güncelle
+DELETE	/api/missions/:id	Görev sil
+Filtre Parametreleri:
+
+status: PLANNED, PRE_FLIGHT_CHECK, IN_PROGRESS, COMPLETED, ABORTED
+
+droneId: Belirli bir drone'un görevleri
+
+startDate: Başlangıç tarihi (ISO format)
+
+endDate: Bitiş tarihi (ISO format)
+
+Maintenance Endpoint'leri
+Method	Endpoint	Açıklama
+GET	/api/maintenance	Tüm bakım kayıtlarını listele
+GET	/api/maintenance/:id	Bakım kaydı detayı
+POST	/api/maintenance	Yeni bakım kaydı oluştur
+PUT	/api/maintenance/:id	Bakım kaydı güncelle
+DELETE	/api/maintenance/:id	Bakım kaydı sil
+POST	/api/maintenance/:droneId/start	Drone'u bakıma al
+POST	/api/maintenance/:droneId/complete	Bakımı tamamla
+Dashboard Endpoint'leri
+Method	Endpoint	Açıklama
+GET	/health	Filo sağlık durumu özeti
+GET	/api/dashboard/health	Filo sağlık durumu özeti (alternatif)
+Seed Endpoint'leri
+Method	Endpoint	Açıklama
+POST	/api/seed	Test verilerini yükle
+DELETE	/api/seed	Tüm verileri temizle
+GET	/api/seed/status	Seed servis durumu
+
+
+📊 Mission Status Flow
+text
+PLANNED → PRE_FLIGHT_CHECK → IN_PROGRESS → COMPLETED
+    ↓              ↓                ↓
+  ABORTED       ABORTED          ABORTED
+PLANNED: Görev planlandı
+
+PRE_FLIGHT_CHECK: Uçuş öncesi kontrol
+
+IN_PROGRESS: Görev devam ediyor
+
+COMPLETED: Görev tamamlandı (final)
+
+ABORTED: Görev durduruldu (final)
+
+🔒 Validasyon Kuralları
+Drone Validasyonları
+serialNumber: SKY-XXXX-XXXX formatında olmalı
+
+totalFlightHours: 0'dan küçük olamaz
+
+status: AVAILABLE, IN_MISSION, MAINTENANCE, RETIRED
+
+Mission Validasyonları
+plannedStart: Geçmişe planlanamaz
+
+plannedStart: plannedEnd'den önce olmalı
+
+Aynı drone'a çakışan görev atanamaz
+
+Sadece AVAILABLE dronelar göreve atanabilir
+
+flightHoursLogged: COMPLETED durumunda zorunlu
+
+abortReason: ABORTED durumunda zorunlu
+
+Maintenance Validasyonları
+flightHoursAtTime: 0'dan küçük olamaz
+
+datePerformed: Geçerli bir tarih olmalı
+
+Sadece AVAILABLE veya MAINTENANCE dronelar bakıma alınabilir
+
+🗄️ Veritabanı Migration
+bash
+# Yeni migration oluştur
+npm run migration:create src/migrations/MyMigration
+
+# Migration'ları çalıştır
+npm run migration:run
+
+# Migration'ı geri al
+npm run migration:revert
+
+# Otomatik migration oluştur (entity değişikliklerine göre)
+npm run migration:generate src/migrations/AutoMigration
+
+
+Migration Dosyası Örneği
+typescript
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class MyMigrationXXXXXXXXX implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
+      CREATE TABLE "new_table" (
+        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "name" character varying NOT NULL,
+        CONSTRAINT "PK_new_table" PRIMARY KEY ("id")
+      );
+    `);
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE "new_table"`);
+  }
+}
+
+Seed ile oluşturulan veriler:
+
+1000 drone (gerçekçi durum dağılımı ile)
+
+250 mission (tarih ve durum dağılımı ile)
+
+500 maintenance log (drone'lara bağlı olarak)
+
+Fleet Health
+curl http://localhost:3000/health
