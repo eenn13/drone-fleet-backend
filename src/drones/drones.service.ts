@@ -96,7 +96,7 @@ export class DronesService {
       // Drone'un aktif veya planlanmış görevleri var mı kontrol et
       const activeMissions = await this.missionRepository.find({
         where: [
-          { droneId: id, status: MissionStatus.SCHEDULED },
+          { droneId: id, status: MissionStatus.PLANNED },
           { droneId: id, status: MissionStatus.IN_PROGRESS },
         ],
       });
@@ -127,7 +127,7 @@ export class DronesService {
   async remove(id: string): Promise<boolean> {
     const activeMissions = await this.missionRepository.find({
       where: [
-        { droneId: id, status: MissionStatus.SCHEDULED },
+        { droneId: id, status: MissionStatus.PLANNED },
         { droneId: id, status: MissionStatus.IN_PROGRESS },
       ],
     });
@@ -171,7 +171,7 @@ export class DronesService {
   async canDelete(id: string): Promise<boolean> {
     const activeMissions = await this.missionRepository.find({
       where: [
-        { droneId: id, status: MissionStatus.SCHEDULED },
+        { droneId: id, status: MissionStatus.PLANNED },
         { droneId: id, status: MissionStatus.IN_PROGRESS },
       ],
     });
@@ -181,7 +181,7 @@ export class DronesService {
   async getActiveMissionCount(id: string): Promise<number> {
     const activeMissions = await this.missionRepository.find({
       where: [
-        { droneId: id, status: MissionStatus.SCHEDULED },
+        { droneId: id, status: MissionStatus.PLANNED },
         { droneId: id, status: MissionStatus.IN_PROGRESS },
       ],
     });

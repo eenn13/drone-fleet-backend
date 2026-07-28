@@ -122,8 +122,6 @@ export class MissionsService {
           drone.status = DroneStatus.IN_MISSION;
         } else if (updateMissionDto.status === MissionStatus.COMPLETED) {
           drone.status = DroneStatus.AVAILABLE;
-        } else if (updateMissionDto.status === MissionStatus.CANCELLED) {
-          drone.status = DroneStatus.AVAILABLE;
         } else if (updateMissionDto.status === MissionStatus.ABORTED) {
           drone.status = DroneStatus.AVAILABLE;
         }

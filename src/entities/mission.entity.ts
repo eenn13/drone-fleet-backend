@@ -16,10 +16,10 @@ export enum MissionType {
 }
 
 export enum MissionStatus {
-  SCHEDULED = 'SCHEDULED',
+  PLANNED = 'PLANNED',
+  PRE_FLIGHT_CHECK='PRE_FLIGHT_CHECK',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
   ABORTED = 'ABORTED',
 }
 
@@ -58,7 +58,7 @@ export class Mission {
   @Column({
     type: 'enum',
     enum: MissionStatus,
-    default: MissionStatus.SCHEDULED,
+    default: MissionStatus.PLANNED,
   })
   status!: MissionStatus;
 
