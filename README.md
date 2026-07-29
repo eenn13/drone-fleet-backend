@@ -109,6 +109,40 @@ npm run test test/unit/app.service.spec.ts
 # Integration testler
 npm run test test/integration/mission-lifecycle.spec.ts
 
+🐳 Docker ile Çalıştırma
+Gereksinimler
+Docker Desktop (Windows/Mac) veya Docker Engine (Linux)
+
+Docker Compose
+
+Adımlar
+bash
+# 1. Backend dizinine gidin
+cd ~/Desktop/repositories/drone-fleet-backend
+
+# 2. Container'ları build edin ve başlatın
+docker-compose up -d
+
+# 3. Logları kontrol edin
+docker-compose logs -f backend
+
+# 4. API'yi test edin
+curl http://localhost:3000/health
+
+
+Docker ile Seed ve Migration
+bash
+# Migration çalıştır
+docker exec -it drone-fleet-backend npm run migration:run
+
+# Seed çalıştır
+docker exec -it drone-fleet-backend sh -c "wget -qO- --post-data='' http://localhost:3000/api/seed"
+
+# PostgreSQL'e bağlan
+docker exec -it drone-fleet-postgres psql -U postgres -d postgres
+
+# Container'a shell ile gir
+docker exec -it drone-fleet-backend sh
 
 backend/
 ├── src/
