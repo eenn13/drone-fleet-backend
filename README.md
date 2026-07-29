@@ -49,8 +49,13 @@ cp .env.example .env
 psql -U postgres -c "CREATE DATABASE drone_fleet;"
 
 # 5. Migration'ları çalıştırın
+# Migration dosyası oluştur
+npx typeorm migration:create src/migrations/InitialSchema
+
 npm run build
-npm run migration:run
+# Migration'ları çalıştır
+npx typeorm migration:run -d typeorm.config.ts
+
 
 .env Dosyası
 # Database
