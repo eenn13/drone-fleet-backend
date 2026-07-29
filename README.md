@@ -84,6 +84,32 @@ npm run start:debug
 # Production modu
 npm run start:prod
 
+
+🧪 Testler
+
+# Tüm testleri çalıştır
+npm run test
+
+# Watch modunda çalıştır (değişiklikleri izler)
+npm run test:watch
+
+# Coverage raporu al
+npm run test:cov
+
+# Debug modunda çalıştır
+npm run test:debug
+Belirli Bir Test Dosyasını Çalıştırma
+bash
+# Unit testler
+npm run test test/unit/drones/drones.service.spec.ts
+npm run test test/unit/drones/maintenance-calculator.service.spec.ts
+npm run test test/unit/missions/missions.service.spec.ts
+npm run test test/unit/app.service.spec.ts
+
+# Integration testler
+npm run test test/integration/mission-lifecycle.spec.ts
+
+
 backend/
 ├── src/
 │   ├── drones/              # Drone modülü
